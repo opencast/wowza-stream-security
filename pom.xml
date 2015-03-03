@@ -559,11 +559,11 @@
   </pluginRepositories>
 
   <repositories>
-    <repository>
+    <!--repository>
       <id>LocalProjectRepo</id>
       <name>LocalProjectRepo</name>
       <url>file://${project.basedir}/../../lib</url>
-    </repository>
+    </repository-->
     <repository>
       <id>opencast</id>
       <name>Opencast Repo</name>
