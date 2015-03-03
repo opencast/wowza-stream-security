@@ -26,7 +26,7 @@ public class PolicyUtilsTest {
             "{\"Statement\":{\"Condition\":{\"DateGreaterThan\":1425084379000,\"DateLessThan\":1425170777000,\"IpAddress\":\"10.0.0.1\"},\"Resource\":\"http:\\/\\/mh-allinone\\/\"}}",
             PolicyUtils.toJson(policy).toJSONString());
   }
-  
+
   @Test
   public void testFromJson() throws UnsupportedEncodingException {
     String policyJson = "{\"Statement\": {\"Resource\":\"http://mh-allinone/engage/url/to/resource.mp4\",\"Condition\":{\"DateLessThan\":1425170777000,\"DateGreaterThan\":1425084379000,\"IpAddress\": \"10.0.0.1\"}}}";
@@ -41,14 +41,14 @@ public class PolicyUtilsTest {
     DateTime before = new DateTime(2015, 03, 01, 00, 46, 17, 0, DateTimeZone.UTC);
     assertEquals(before, policy.getDateLessThan());
   }
-  
+
   @Test
   public void testBase64Decoding() throws UnsupportedEncodingException {
     String policyValue = "{policy:'The Policy'}";
     String result = PolicyUtils.base64Decode(PolicyUtils.base64Encode(policyValue));
     assertEquals(policyValue, result);
   }
-  
+
   @Test
   public void testFromBase64EncodedPolicy() throws UnsupportedEncodingException {
     String examplePolicy = "{\"Statement\": {\"Resource\":\"http://mh-allinone/engage/url/to/resource.mp4\",\"Condition\":{\"DateLessThan\":1425170777000,\"DateGreaterThan\":1425084379000,\"IpAddress\": \"10.0.0.1\"}}}";
@@ -63,13 +63,13 @@ public class PolicyUtilsTest {
     DateTime before = new DateTime(2015, 03, 01, 00, 46, 17, 0, DateTimeZone.UTC);
     assertEquals(before, policy.getDateLessThan());
   }
-  
+
   @Test
   public void testToBase64EncodedPolicy() throws UnsupportedEncodingException {
     String resource = "http://mh-allinone/";
     DateTime before = new DateTime(2015, 03, 01, 00, 46, 17, 0, DateTimeZone.UTC);
     Policy policy = new Policy(resource, before);
-    
+
     Policy result = PolicyUtils.fromBase64EncodedPolicy(PolicyUtils.toBase64EncodedPolicy(policy));
     assertEquals(resource, result.getResource());
     assertEquals(before, result.getDateLessThan());

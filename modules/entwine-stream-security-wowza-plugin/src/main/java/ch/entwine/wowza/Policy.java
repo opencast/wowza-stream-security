@@ -26,7 +26,7 @@ public class Policy {
   private DateTime dateGreaterThan;
   /** The base URL for the resource being requested. */
   private String resource;
-  
+
   public Policy(String resource, DateTime dateLessThan) {
     if (resource == null || dateLessThan == null) {
       throw new IllegalStateException("A policy must have both a non-null resource and date less than.");
@@ -38,11 +38,11 @@ public class Policy {
   public String getClientIpAddress() {
     return clientIpAddress;
   }
-  
+
   public void setClientIpAddress(String clientIpAddress) {
     this.clientIpAddress = clientIpAddress;
   }
-  
+
   public DateTime getDateLessThan() {
     return dateLessThan;
   }
@@ -50,7 +50,7 @@ public class Policy {
   public void setDateLessThan(DateTime dateLessThan) {
     this.dateLessThan = dateLessThan;
   }
-  
+
   public DateTime getDateGreaterThan() {
     return dateGreaterThan;
   }
@@ -58,11 +58,11 @@ public class Policy {
   public void setDateGreaterThan(DateTime dateGreaterThan) {
     this.dateGreaterThan = dateGreaterThan;
   }
-  
+
   public String getResource() {
     return resource;
   }
-  
+
   public void setResource(String resource) {
     this.resource = resource;
   }

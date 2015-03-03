@@ -1,5 +1,7 @@
 package ch.entwine.wowza;
 
+import ch.entwine.utils.ResourceRequestUtil;
+
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.httpstreamer.cupertinostreaming.httpstreamer.HTTPStreamerSessionCupertino;
@@ -10,6 +12,10 @@ import com.wowza.wms.request.RequestFunction;
 import com.wowza.wms.rtp.model.RTPSession;
 import com.wowza.wms.stream.IMediaStream;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * The Wowza plugin to determine if a resource request for a signed url is valid.
  */
@@ -19,11 +25,33 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
     BadRequest, Forbidden, Gone, Ok
   };
 
-  /** The key to use to encrypt the signatures. */
-  private static String key = "0123456789abcdef";
+  /** The keys to use to encrypt the signatures. */
+  private static Properties properties = new Properties();
+
+  public EntwineStreamSecurityWowzaPlugin() {
+    super();
+
+    InputStream in = getClass().getResourceAsStream("/../conf");
+    try {
+      properties.load(in);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
 
   private static void handleClient(IClient client) {
-    Status accepted = authenticate(client.getQueryStr(), client.getIp(), client.getPageUrl(), client.getUri());
+    Status accepted = authenticate(client.getQueryStr(), client.getIp(), client.getPageUrl(), client.getUri(),
+            properties);
     switch (accepted) {
       case BadRequest:
         getLogger().warn("The request resulted in a bad request.");
@@ -81,12 +109,15 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
     handleClient(client);
   }
 
-  protected static Status authenticate(String queryString, String clientIp, String pageUrl, String resourceUri) {
+  protected static Status authenticate(String queryString, String clientIp, String pageUrl, String resourceUri,
+          Properties properties) {
     getLogger().info("Query String: " + queryString);
     getLogger().info("Client Ip: " + clientIp);
     getLogger().info("Page URL - The page that is opening the stream: " + pageUrl);
     getLogger().info("URI - The URI for the stream connection: " + resourceUri);
-    return new ResourceRequest(queryString, clientIp, resourceUri, key).getStatus();
+    // return new ResourceRequest(queryString, clientIp, resourceUri, properties).getStatus();
+    return ResourceRequestUtil.resourceRequestfromQueryString(queryString, clientIp, resourceUri, properties)
+            .getStatus();
   }
 
 }

@@ -32,10 +32,10 @@ public class PolicyUtils {
   private static final String RESOURCE_KEY = "Resource";
   /** The JSON key for the main object of the policy. */
   private static final String STATEMENT_KEY = "Statement";
-  
+
   /** Parser used to parse policy content */
   private static JSONParser jsonParser = new JSONParser();
-  
+
   /**
    * Encode a {@link String} into Base 64 encoding
    * 
@@ -46,10 +46,10 @@ public class PolicyUtils {
   public static String base64Encode(String value) {
     return Base64.encodeBytes(value.getBytes(), Base64.URL_SAFE + Base64.DONT_BREAK_LINES);
   }
-  
+
   /**
    * Decode a {@link String} from Base 64 encoding
-   * 
+   *
    * @param value
    *          The {@link String} to encode into Base 64
    * @return The {@link String} decoded from base 64.
@@ -58,7 +58,7 @@ public class PolicyUtils {
     byte[] decodedBytes = Base64.decode(value, (Base64.URL_SAFE + Base64.DONT_BREAK_LINES));
     return new String(decodedBytes, ResourceRequest.charSet);
   }
-  
+
   /**
    * Encode a byte[] into Base 64 encoding
    * 
@@ -69,7 +69,7 @@ public class PolicyUtils {
   public static String base64Encode(byte[] value) {
     return Base64.encodeBytes(value, (Base64.URL_SAFE + Base64.DONT_BREAK_LINES));
   }
-  
+
   /**
    * Get a {@link Policy} from JSON data.
    * 
@@ -105,9 +105,12 @@ public class PolicyUtils {
 
   /**
    * Render a {@link Policy} into JSON.
-   * @param policy The {@link Policy} to render into JSON.
+   *
+   * @param policy
+   *          The {@link Policy} to render into JSON.
    * @return The {@link JSONObject} representation of the {@link Policy}.
    */
+  @SuppressWarnings("unchecked")
   public static JSONObject toJson(Policy policy) {
     JSONObject policyJSON = new JSONObject();
 
@@ -130,7 +133,7 @@ public class PolicyUtils {
 
     return policyJSON;
   }
-  
+
   /**
    * Create a {@link Policy} in Json format and Base 64 encoded.
    * 
@@ -142,7 +145,7 @@ public class PolicyUtils {
     String decodedPolicyString = base64Decode(encodedPolicy);
     return fromJson(decodedPolicyString);
   }
-  
+
   /**
    * Create a {@link Policy} in Json format and Base 64 encoded.
    * 
@@ -153,7 +156,7 @@ public class PolicyUtils {
   public static String toBase64EncodedPolicy(Policy policy) {
     return base64Encode(PolicyUtils.toJson(policy).toJSONString());
   }
-  
+
   /**
    * Get an encrypted version of a {@link Policy} to use as a signature.
    * 
