@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.entwine.wowza</groupId>
   <artifactId>entwine-stream-security-wowza-plugin</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>entwine-streamsecurity-wowza-plugin</name>
   
@@ -13,7 +13,11 @@
   </properties>
   
   <dependencies>
-  
+      <dependency>
+          <groupId>org.opencastproject</groupId>
+          <artifactId>signing-common</artifactId>
+          <version>1.7-SNAPSHOT</version>
+      </dependency>
       <!-- Wowza Dependecies -->
       <dependency>
           <groupId>com.wms</groupId>
@@ -110,6 +114,26 @@
           <source>1.7</source>
           <target>1.7</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>copy-to-deploy</id>
+                <phase>install</phase>
+                <configuration>
+                    <target if="deployTo">
+                    <delete dir="${deployTo}/${project.build.finalName}" />
+                    <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                        todir="${deployTo}" failonerror="false" />
+                    </target>
+                </configuration>
+                <goals>
+                    <goal>run</goal>
+                </goals>
+            </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

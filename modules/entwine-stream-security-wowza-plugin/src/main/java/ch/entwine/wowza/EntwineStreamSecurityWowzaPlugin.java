@@ -1,5 +1,6 @@
 package ch.entwine.wowza;
 
+import ch.entwine.signing.ResourceRequest.Status;
 import ch.entwine.utils.ResourceRequestUtil;
 
 import com.wowza.wms.amf.AMFDataList;
@@ -26,11 +27,6 @@ import java.util.Properties;
 public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
   private static final String CONF_KEYS_PROPERTIES_LOCATION = "conf/keys.properties";
 
-  /** The possible status for a request that is a signed URL. */
-  public enum Status {
-    BadRequest, Forbidden, Gone, Ok
-  };
-
   /** The keys to use to encrypt the signatures. */
   private static Properties properties = new Properties();
 
@@ -44,20 +40,21 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
         String wowzaDirectory = new File(new File(currentJarLocation).getParent()).getParent();
         File keyProperties = new File(wowzaDirectory, CONF_KEYS_PROPERTIES_LOCATION);
         getLogger().debug("Loading encryption key properties from: " + keyProperties.getAbsolutePath());
-        if (keyProperties.exists()) {
-          fis = new FileInputStream(keyProperties);
-          if (fis != null) {
-            properties.load(fis);
-          } else {
-            getLogger().warn(
-                    "Unable to load the encryption key properties file at " + keyProperties.getAbsolutePath()
-                            + " so all signed urls will be rejected.");
-          }
-        } else {
+        if (!keyProperties.exists()) {
           getLogger().warn(
                   "The encryption key properties file at " + keyProperties.getAbsolutePath()
                           + " is missing so all signed urls will be rejected.");
+          return;
         }
+        if (!keyProperties.canRead()) {
+          getLogger()
+                  .warn("Unable to read the encryption key properties file at "
+                          + keyProperties.getAbsolutePath()
+                          + " is missing so all signed urls will be rejected. Please check the permissions for the file.");
+          return;
+        }
+        fis = new FileInputStream(keyProperties);
+        properties.load(fis);
       } catch (IOException e) {
         getLogger().error("Unable to load the encryption keys because: " + ExceptionUtils.getStackTrace(e));
       } catch (URISyntaxException e) {
@@ -75,71 +72,69 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   private static void handleClient(IClient client) {
-    Status accepted = authenticate(client.getQueryStr(), client.getIp(), client.getPageUrl(), client.getUri(),
-            properties);
+    Status accepted = authenticate(client.getQueryStr(), client.getIp(), client.getUri(), properties);
     switch (accepted) {
       case BadRequest:
-        getLogger().warn("The request resulted in a bad request.");
-        client.rejectConnection("The request resulted in a bad request.");
+        getLogger().warn("The request was rejected because it was a bad request.");
+        client.rejectConnection("The request was rejected because it was a bad request.");
         break;
       case Forbidden:
-        getLogger().warn("The request resulted in a forbidden.");
-        client.rejectConnection("The request resulted in a forbidden.");
+        getLogger().warn(
+                "The credentials provided were not correct so the client is forbidden from seeing the resource..");
+        client.rejectConnection("Forbidden");
         break;
       case Gone:
-        getLogger().warn("The resource is now gone.");
-        client.rejectConnection("The resource is now gone.");
+        getLogger().warn("The resource is not currently available and is gone.");
+        client.rejectConnection("The resource is currently not available.");
       case Ok:
         getLogger().debug("The resource is allowed to be viewed.");
     }
   }
 
   public void onConnect(IClient client, RequestFunction function, AMFDataList params) {
-    getLogger().info("onConnect: " + client.getClientId());
+    getLogger().trace("onConnect: " + client.getClientId());
     handleClient(client);
   }
 
   public void onConnectAccept(IClient client) {
-    getLogger().info("onConnectAccept: " + client.getClientId());
+    getLogger().trace("onConnectAccept: " + client.getClientId());
     handleClient(client);
   }
 
   public void onStreamCreate(IMediaStream stream) {
-    getLogger().info("onStreamCreate: " + stream.getSrc());
+    getLogger().trace("onStreamCreate: " + stream.getSrc());
     handleClient(stream.getClient());
   }
 
   public void onHTTPSessionCreate(IHTTPStreamerSession httpSession) {
-    getLogger().info("onHTTPSessionCreate: " + httpSession.getSessionId());
+    getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
     handleClient(httpSession.getStream().getClient());
   }
 
   public void onHTTPCupertinoStreamingSessionCreate(HTTPStreamerSessionCupertino httpSession) {
-    getLogger().info("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
+    getLogger().trace("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
     handleClient(httpSession.getStream().getClient());
   }
 
   public void onHTTPSmoothStreamingSessionCreate(HTTPStreamerSessionSmoothStreamer httpSession) {
-    getLogger().info("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
+    getLogger().trace("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
     handleClient(httpSession.getStream().getClient());
   }
 
   public void onRTPSessionCreate(RTPSession rtpSession) {
-    getLogger().info("onRTPSessionCreate: " + rtpSession.getSessionId());
+    getLogger().trace("onRTPSessionCreate: " + rtpSession.getSessionId());
     handleClient(rtpSession.getRTSPStream().getStream().getClient());
   }
 
   public void onCall(String handlerName, IClient client, RequestFunction function, AMFDataList params) {
-    getLogger().info("onCall: " + handlerName);
+    getLogger().trace("onCall: " + handlerName);
     handleClient(client);
   }
 
-  protected static Status authenticate(String queryString, String clientIp, String pageUrl, String resourceUri,
-          Properties properties) {
-    getLogger().info("Query String: " + queryString);
-    getLogger().info("Client Ip: " + clientIp);
-    getLogger().info("Page URL - The page that is opening the stream: " + pageUrl);
-    getLogger().info("URI - The URI for the stream connection: " + resourceUri);
+  protected static Status authenticate(String queryString, String clientIp, String resourceUri, Properties properties) {
+    getLogger().trace("Query String: " + queryString);
+    getLogger().trace("Client Ip: " + clientIp);
+    getLogger().trace("Resource: " + resourceUri);
     return ResourceRequestUtil.resourceRequestfromQueryString(queryString, clientIp, resourceUri, properties)
             .getStatus();
   }
