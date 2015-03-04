@@ -12,14 +12,20 @@ import com.wowza.wms.request.RequestFunction;
 import com.wowza.wms.rtp.model.RTPSession;
 import com.wowza.wms.stream.IMediaStream;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
  * The Wowza plugin to determine if a resource request for a signed url is valid.
  */
 public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
+  private static final String CONF_KEYS_PROPERTIES_LOCATION = "conf/keys.properties";
+
   /** The possible status for a request that is a signed URL. */
   public enum Status {
     BadRequest, Forbidden, Gone, Ok
@@ -30,21 +36,40 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
 
   public EntwineStreamSecurityWowzaPlugin() {
     super();
-
-    InputStream in = getClass().getResourceAsStream("/../conf");
-    try {
-      properties.load(in);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } finally {
+    if (properties.size() == 0) {
+      FileInputStream fis = null;
       try {
-        if (in != null) {
-          in.close();
+        String currentJarLocation = EntwineStreamSecurityWowzaPlugin.class.getProtectionDomain().getCodeSource()
+                .getLocation().toURI().getPath();
+        String wowzaDirectory = new File(new File(currentJarLocation).getParent()).getParent();
+        File keyProperties = new File(wowzaDirectory, CONF_KEYS_PROPERTIES_LOCATION);
+        getLogger().debug("Loading encryption key properties from: " + keyProperties.getAbsolutePath());
+        if (keyProperties.exists()) {
+          fis = new FileInputStream(keyProperties);
+          if (fis != null) {
+            properties.load(fis);
+          } else {
+            getLogger().warn(
+                    "Unable to load the encryption key properties file at " + keyProperties.getAbsolutePath()
+                            + " so all signed urls will be rejected.");
+          }
+        } else {
+          getLogger().warn(
+                  "The encryption key properties file at " + keyProperties.getAbsolutePath()
+                          + " is missing so all signed urls will be rejected.");
         }
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        getLogger().error("Unable to load the encryption keys because: " + ExceptionUtils.getStackTrace(e));
+      } catch (URISyntaxException e) {
+        getLogger().error("Unable to load the encryption keys because: " + ExceptionUtils.getStackTrace(e));
+      } finally {
+        try {
+          if (fis != null) {
+            fis.close();
+          }
+        } catch (IOException e) {
+          getLogger().warn("Unable to close the encryption keys because: " + ExceptionUtils.getStackTrace(e));
+        }
       }
     }
   }
@@ -115,7 +140,6 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
     getLogger().info("Client Ip: " + clientIp);
     getLogger().info("Page URL - The page that is opening the stream: " + pageUrl);
     getLogger().info("URI - The URI for the stream connection: " + resourceUri);
-    // return new ResourceRequest(queryString, clientIp, resourceUri, properties).getStatus();
     return ResourceRequestUtil.resourceRequestfromQueryString(queryString, clientIp, resourceUri, properties)
             .getStatus();
   }

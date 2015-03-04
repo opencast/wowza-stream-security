@@ -559,11 +559,6 @@
 
   <repositories>
     <repository>
-      <id>LocalProjectRepo</id>
-      <name>LocalProjectRepo</name>
-      <url>file://${project.basedir}/../../lib</url>
-    </repository>
-    <repository>
       <id>opencast</id>
       <name>Opencast Repo</name>
       <url>http://repository.opencastproject.org/nexus/content/groups/public</url>

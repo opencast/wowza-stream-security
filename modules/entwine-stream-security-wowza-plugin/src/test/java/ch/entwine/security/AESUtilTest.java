@@ -10,9 +10,7 @@ public class AESUtilTest {
     String plaintext = "test text 123 this is of a random length of size"; /* Note null padding */
     String encryptionKey = "0123456789abcdef";
     byte[] encrypted = AESUtil.encrypt(plaintext, encryptionKey);
-    System.out.println("'" + encrypted + "'");
     String decrypted = AESUtil.decrypt(encrypted, encryptionKey);
-    System.out.println("'" + decrypted + "'");
     assertEquals(plaintext, decrypted);
   }
 }
