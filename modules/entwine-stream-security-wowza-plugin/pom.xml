@@ -15,8 +15,8 @@
   <dependencies>
       <dependency>
           <groupId>org.opencastproject</groupId>
-          <artifactId>signing-common</artifactId>
-          <version>1.7-SNAPSHOT</version>
+          <artifactId>matterhorn-urlsigning-common</artifactId>
+          <version>2.1-SNAPSHOT</version>
       </dependency>
       <!-- Wowza Dependecies -->
       <dependency>

@@ -1,7 +1,7 @@
 package ch.entwine.wowza;
 
-import ch.entwine.signing.ResourceRequest.Status;
-import ch.entwine.utils.ResourceRequestUtil;
+import org.opencastproject.urlsigning.common.ResourceRequest.Status;
+import org.opencastproject.urlsigning.utils.ResourceRequestUtil;
 
 import com.wowza.wms.amf.AMFDataList;
 import com.wowza.wms.client.IClient;
@@ -135,7 +135,7 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
     getLogger().trace("Query String: " + queryString);
     getLogger().trace("Client Ip: " + clientIp);
     getLogger().trace("Resource: " + resourceUri);
-    return ResourceRequestUtil.resourceRequestfromQueryString(queryString, clientIp, resourceUri, properties)
+    return ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri, properties)
             .getStatus();
   }
 
