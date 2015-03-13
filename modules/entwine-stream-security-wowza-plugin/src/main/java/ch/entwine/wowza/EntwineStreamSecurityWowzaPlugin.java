@@ -73,19 +73,18 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   private static void handleClient(IClient client) {
-    Status accepted = authenticate(client.getQueryStr(), client.getIp(), client.getUri(), properties);
-    switch (accepted) {
+    ResourceRequest request = authenticate(client.getQueryStr(), client.getIp(), client.getUri(), properties);
+    switch (request.getStatus()) {
       case BadRequest:
-        getLogger().warn("The request was rejected because it was a bad request.");
+        getLogger().warn(request.getRejectionReason());
         client.rejectConnection("The request was rejected because it was a bad request.");
         break;
       case Forbidden:
-        getLogger().warn(
-                "The credentials provided were not correct so the client is forbidden from seeing the resource..");
+        getLogger().warn(request.getRejectionReason());
         client.rejectConnection("Forbidden");
         break;
       case Gone:
-        getLogger().warn("The resource is not currently available and is gone.");
+        getLogger().warn(request.getRejectionReason());
         client.rejectConnection("The resource is currently not available.");
       case Ok:
         getLogger().debug("The resource is allowed to be viewed.");
@@ -132,7 +131,8 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
     handleClient(client);
   }
 
-  protected static Status authenticate(String queryString, String clientIp, String resourceUri, Properties properties) {
+  protected static ResourceRequest authenticate(String queryString, String clientIp, String resourceUri,
+          Properties properties) {
     try {
       getLogger().trace("Query String: " + queryString);
       getLogger().trace("Client Ip: " + clientIp);
@@ -147,10 +147,13 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
         getLogger().trace("BaseURL: " + request.getPolicy().getBaseUrl());
         getLogger().trace("Valid Until: " + request.getPolicy().getValidUntil());
       }
-      return request.getStatus();
+      return request;
     } catch (Throwable t) {
       getLogger().error("Unable to process request because: " + ExceptionUtils.getStackTrace(t));
-      return Status.BadRequest;
+      ResourceRequest request = new ResourceRequest();
+      request.setStatus(Status.Forbidden);
+      request.setRejectionReason("Unable to process request due to server error. Unable to verify signed url.");
+      return request;
     }
   }
 
