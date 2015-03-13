@@ -1,5 +1,6 @@
 package ch.entwine.wowza;
 
+import org.opencastproject.urlsigning.common.ResourceRequest;
 import org.opencastproject.urlsigning.common.ResourceRequest.Status;
 import org.opencastproject.urlsigning.utils.ResourceRequestUtil;
 
@@ -132,11 +133,25 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   protected static Status authenticate(String queryString, String clientIp, String resourceUri, Properties properties) {
-    getLogger().trace("Query String: " + queryString);
-    getLogger().trace("Client Ip: " + clientIp);
-    getLogger().trace("Resource: " + resourceUri);
-    return ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri, properties)
-            .getStatus();
+    try {
+      getLogger().trace("Query String: " + queryString);
+      getLogger().trace("Client Ip: " + clientIp);
+      getLogger().trace("Resource: " + resourceUri);
+      ResourceRequest request = ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri,
+              properties);
+      getLogger().trace("Encoded Policy: " + request.getEncodedPolicy());
+      getLogger().trace("Encrypt Id: " + request.getEncryptionKeyId());
+      getLogger().trace("Signature: " + request.getSignature());
+      getLogger().trace("Status: " + request.getStatus());
+      if (request != null && request.getPolicy() != null) {
+        getLogger().trace("BaseURL: " + request.getPolicy().getBaseUrl());
+        getLogger().trace("Valid Until: " + request.getPolicy().getValidUntil());
+      }
+      return request.getStatus();
+    } catch (Throwable t) {
+      getLogger().error("Unable to process request because: " + ExceptionUtils.getStackTrace(t));
+      return Status.BadRequest;
+    }
   }
 
 }
