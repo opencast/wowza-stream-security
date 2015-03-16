@@ -5,6 +5,7 @@ import org.opencastproject.urlsigning.common.ResourceRequest.Status;
 import org.opencastproject.urlsigning.utils.ResourceRequestUtil;
 
 import com.wowza.wms.amf.AMFDataList;
+import com.wowza.wms.application.WMSProperties;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.httpstreamer.cupertinostreaming.httpstreamer.HTTPStreamerSessionCupertino;
 import com.wowza.wms.httpstreamer.model.IHTTPStreamerSession;
@@ -74,6 +75,10 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
 
   private static void handleClient(IClient client) {
     ResourceRequest request = authenticate(client.getQueryStr(), client.getIp(), client.getUri(), properties);
+    handleResourceRequest(client, request);
+  }
+
+  private static void handleResourceRequest(IClient client, ResourceRequest request) {
     switch (request.getStatus()) {
       case BadRequest:
         getLogger().warn(request.getRejectionReason());
@@ -93,17 +98,17 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
 
   public void onConnect(IClient client, RequestFunction function, AMFDataList params) {
     getLogger().trace("onConnect: " + client.getClientId());
-    handleClient(client);
+    //handleClient(client);
   }
 
   public void onConnectAccept(IClient client) {
     getLogger().trace("onConnectAccept: " + client.getClientId());
-    handleClient(client);
+    //handleClient(client);
   }
 
   public void onStreamCreate(IMediaStream stream) {
     getLogger().trace("onStreamCreate: " + stream.getSrc());
-    handleClient(stream.getClient());
+    //handleClient(stream.getClient());
   }
 
   public void onHTTPSessionCreate(IHTTPStreamerSession httpSession) {
@@ -128,7 +133,22 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
 
   public void onCall(String handlerName, IClient client, RequestFunction function, AMFDataList params) {
     getLogger().trace("onCall: " + handlerName);
-    handleClient(client);
+    //handleClient(client);
+  }
+
+  public void play(IClient client, com.wowza.wms.request.RequestFunction function, AMFDataList params) {
+    String streamName = params.getString(PARAM1);
+    String queryStr = "";
+    int streamQueryIdx = streamName.indexOf("?");
+    if (streamQueryIdx >= 0) {
+      queryStr = streamName.substring(streamQueryIdx + 1);
+      streamName = streamName.substring(0, streamQueryIdx);
+      getLogger().info("Query String: " + queryStr);
+      getLogger().info("Stream Name: " + streamName);
+    }
+    ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
+    handleResourceRequest(client, request);
+    invokePrevious(client, function, params);
   }
 
   protected static ResourceRequest authenticate(String queryString, String clientIp, String resourceUri,
