@@ -5,7 +5,6 @@ import org.opencastproject.urlsigning.common.ResourceRequest.Status;
 import org.opencastproject.urlsigning.utils.ResourceRequestUtil;
 
 import com.wowza.wms.amf.AMFDataList;
-import com.wowza.wms.application.WMSProperties;
 import com.wowza.wms.client.IClient;
 import com.wowza.wms.httpstreamer.cupertinostreaming.httpstreamer.HTTPStreamerSessionCupertino;
 import com.wowza.wms.httpstreamer.model.IHTTPStreamerSession;
@@ -98,17 +97,14 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
 
   public void onConnect(IClient client, RequestFunction function, AMFDataList params) {
     getLogger().trace("onConnect: " + client.getClientId());
-    //handleClient(client);
   }
 
   public void onConnectAccept(IClient client) {
     getLogger().trace("onConnectAccept: " + client.getClientId());
-    //handleClient(client);
   }
 
   public void onStreamCreate(IMediaStream stream) {
     getLogger().trace("onStreamCreate: " + stream.getSrc());
-    //handleClient(stream.getClient());
   }
 
   public void onHTTPSessionCreate(IHTTPStreamerSession httpSession) {
@@ -133,7 +129,6 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
 
   public void onCall(String handlerName, IClient client, RequestFunction function, AMFDataList params) {
     getLogger().trace("onCall: " + handlerName);
-    //handleClient(client);
   }
 
   public void play(IClient client, com.wowza.wms.request.RequestFunction function, AMFDataList params) {
@@ -143,12 +138,14 @@ public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
     if (streamQueryIdx >= 0) {
       queryStr = streamName.substring(streamQueryIdx + 1);
       streamName = streamName.substring(0, streamQueryIdx);
-      getLogger().info("Query String: " + queryStr);
-      getLogger().info("Stream Name: " + streamName);
+      getLogger().trace("Query String: " + queryStr);
+      getLogger().trace("Stream Name: " + streamName);
     }
     ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
     handleResourceRequest(client, request);
-    invokePrevious(client, function, params);
+    if (ResourceRequest.Status.Ok.equals(request.getStatus())) {
+      invokePrevious(client, function, params);
+    }
   }
 
   protected static ResourceRequest authenticate(String queryString, String clientIp, String resourceUri,
