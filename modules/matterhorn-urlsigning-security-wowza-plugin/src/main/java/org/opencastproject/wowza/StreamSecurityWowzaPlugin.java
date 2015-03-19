@@ -1,4 +1,4 @@
-package ch.entwine.wowza;
+package org.opencastproject.wowza;
 
 import org.opencastproject.urlsigning.common.ResourceRequest;
 import org.opencastproject.urlsigning.common.ResourceRequest.Status;
@@ -25,18 +25,18 @@ import java.util.Properties;
 /**
  * The Wowza plugin to determine if a resource request for a signed url is valid.
  */
-public class EntwineStreamSecurityWowzaPlugin extends ModuleBase {
+public class StreamSecurityWowzaPlugin extends ModuleBase {
   private static final String CONF_KEYS_PROPERTIES_LOCATION = "conf/keys.properties";
 
   /** The keys to use to encrypt the signatures. */
   private static Properties properties = new Properties();
 
-  public EntwineStreamSecurityWowzaPlugin() {
+  public StreamSecurityWowzaPlugin() {
     super();
     if (properties.size() == 0) {
       FileInputStream fis = null;
       try {
-        String currentJarLocation = EntwineStreamSecurityWowzaPlugin.class.getProtectionDomain().getCodeSource()
+        String currentJarLocation = StreamSecurityWowzaPlugin.class.getProtectionDomain().getCodeSource()
                 .getLocation().toURI().getPath();
         String wowzaDirectory = new File(new File(currentJarLocation).getParent()).getParent();
         File keyProperties = new File(wowzaDirectory, CONF_KEYS_PROPERTIES_LOCATION);
