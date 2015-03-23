@@ -72,12 +72,16 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
     }
   }
 
-  private static void handleClient(IClient client) {
-    ResourceRequest request = authenticate(client.getQueryStr(), client.getIp(), client.getUri(), properties);
-    handleResourceRequest(client, request);
-  }
-
-  private static void handleResourceRequest(IClient client, ResourceRequest request) {
+  /**
+   * Reject or allow a request that has an {@link IClient}
+   *
+   * @param client
+   *          The client for the request.
+   * @param request
+   *          The request to determine if it should be logged and rejected.
+   */
+  private static void handleClient(IClient client, ResourceRequest request) {
+    logResourceRequest(request);
     switch (request.getStatus()) {
       case BadRequest:
         getLogger().warn(request.getRejectionReason());
@@ -90,8 +94,31 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
       case Gone:
         getLogger().warn(request.getRejectionReason());
         client.rejectConnection("The resource is currently not available.");
+        break;
       case Ok:
         getLogger().debug("The resource is allowed to be viewed.");
+    }
+  }
+
+  /**
+   * Log a request based upon its result.
+   *
+   * @param request
+   *          The {@link ResourceRequest} with the status of the authentication.
+   */
+  private static void logResourceRequest(ResourceRequest request) {
+    switch (request.getStatus()) {
+      case BadRequest:
+        getLogger().warn(request.getRejectionReason());
+        break;
+      case Forbidden:
+        getLogger().warn(request.getRejectionReason());
+        break;
+      case Gone:
+        getLogger().warn(request.getRejectionReason());
+        break;
+      case Ok:
+        getLogger().trace("The resource is allowed to be viewed.");
     }
   }
 
@@ -107,30 +134,60 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
     getLogger().trace("onStreamCreate: " + stream.getSrc());
   }
 
+  /**
+   * Callback from Wowza when a request is made over HTTP for a resource.
+   *
+   * @param httpSession
+   *          The details of the request for the resource.
+   */
   public void onHTTPSessionCreate(IHTTPStreamerSession httpSession) {
     getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
-    handleClient(httpSession.getStream().getClient());
+    String resourceUri = httpSession.getUri().replaceFirst(httpSession.getAppInstance().getApplication().getName() + "/", "");
+    ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(), resourceUri, properties);
+    logResourceRequest(resourceRequest);
+    if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+      httpSession.rejectSession();
+    }
   }
 
   public void onHTTPCupertinoStreamingSessionCreate(HTTPStreamerSessionCupertino httpSession) {
     getLogger().trace("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
-    handleClient(httpSession.getStream().getClient());
   }
 
   public void onHTTPSmoothStreamingSessionCreate(HTTPStreamerSessionSmoothStreamer httpSession) {
     getLogger().trace("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
-    handleClient(httpSession.getStream().getClient());
   }
 
+  /**
+   * Callback function when Wowza has a new request for an RTP session.
+   *
+   * @param rtpSession
+   *          The details of the RTP session making the request for a stream.
+   */
   public void onRTPSessionCreate(RTPSession rtpSession) {
     getLogger().trace("onRTPSessionCreate: " + rtpSession.getSessionId());
-    handleClient(rtpSession.getRTSPStream().getStream().getClient());
+    String resourceUri = rtpSession.getUri().replaceFirst(rtpSession.getAppInstance().getApplication().getName() + "/", "");
+    ResourceRequest resourceRequest = authenticate(rtpSession.getQueryStr(), rtpSession.getIp(), resourceUri, properties);
+    logResourceRequest(resourceRequest);
+    if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+      rtpSession.rejectSession();
+    }
   }
 
   public void onCall(String handlerName, IClient client, RequestFunction function, AMFDataList params) {
     getLogger().trace("onCall: " + handlerName);
   }
 
+  /**
+   * Callback function from Wowza for when a stream is played. Used by RTMP.
+   *
+   * @param client
+   *          The client that is making the request to play.
+   * @param function
+   *          The {@link RequestFunction}
+   * @param params
+   *          The parameters for the request.
+   */
   public void play(IClient client, com.wowza.wms.request.RequestFunction function, AMFDataList params) {
     String streamName = params.getString(PARAM1);
     String queryStr = "";
@@ -142,27 +199,40 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
       getLogger().trace("Stream Name: " + streamName);
     }
     ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
-    handleResourceRequest(client, request);
+    handleClient(client, request);
     if (ResourceRequest.Status.Ok.equals(request.getStatus())) {
       invokePrevious(client, function, params);
     }
   }
 
+  /**
+   * Authenticate a request for a resource.
+   *
+   * @param queryString
+   *          The query string of the request that will contain the signature, policy and key id.
+   * @param clientIp
+   *          The ip of the client making the request in case it is a part of the policy.
+   * @param resourceUri
+   *          The uri of the resource being requested, the stream location.
+   * @param properties
+   *          The collection of keys and properties for this plugin.
+   * @return A {@link ResourceRequest} with the result whether a request should be allowed or rejected.
+   */
   protected static ResourceRequest authenticate(String queryString, String clientIp, String resourceUri,
           Properties properties) {
     try {
-      getLogger().trace("Query String: " + queryString);
-      getLogger().trace("Client Ip: " + clientIp);
-      getLogger().trace("Resource: " + resourceUri);
+      getLogger().debug("Query String: " + queryString);
+      getLogger().debug("Client Ip: " + clientIp);
+      getLogger().debug("Resource: " + resourceUri);
       ResourceRequest request = ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri,
               properties);
-      getLogger().trace("Encoded Policy: " + request.getEncodedPolicy());
-      getLogger().trace("Encrypt Id: " + request.getEncryptionKeyId());
-      getLogger().trace("Signature: " + request.getSignature());
-      getLogger().trace("Status: " + request.getStatus());
+      getLogger().debug("Encoded Policy: " + request.getEncodedPolicy());
+      getLogger().debug("Encrypt Id: " + request.getEncryptionKeyId());
+      getLogger().debug("Signature: " + request.getSignature());
+      getLogger().debug("Status: " + request.getStatus());
       if (request != null && request.getPolicy() != null) {
-        getLogger().trace("BaseURL: " + request.getPolicy().getBaseUrl());
-        getLogger().trace("Valid Until: " + request.getPolicy().getValidUntil());
+        getLogger().debug("BaseURL: " + request.getPolicy().getBaseUrl());
+        getLogger().debug("Valid Until: " + request.getPolicy().getValidUntil());
       }
       return request;
     } catch (Throwable t) {
