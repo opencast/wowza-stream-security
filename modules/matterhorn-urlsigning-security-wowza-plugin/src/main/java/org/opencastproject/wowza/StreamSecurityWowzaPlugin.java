@@ -141,12 +141,18 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
    *          The details of the request for the resource.
    */
   public void onHTTPSessionCreate(IHTTPStreamerSession httpSession) {
-    getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
-    String resourceUri = httpSession.getUri().replaceFirst(httpSession.getAppInstance().getApplication().getName() + "/", "");
-    ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(), resourceUri, properties);
-    logResourceRequest(resourceRequest);
-    if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
-      httpSession.rejectSession();
+    try {
+      getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
+      String resourceUri = httpSession.getUri().replaceFirst(
+              httpSession.getAppInstance().getApplication().getName() + "/", "");
+      ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(),
+              resourceUri, properties);
+      logResourceRequest(resourceRequest);
+      if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+        httpSession.rejectSession();
+      }
+    } catch (Throwable t) {
+      getLogger().error("Unable to play http session." + ExceptionUtils.getStackTrace(t));
     }
   }
 
@@ -165,12 +171,18 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
    *          The details of the RTP session making the request for a stream.
    */
   public void onRTPSessionCreate(RTPSession rtpSession) {
-    getLogger().trace("onRTPSessionCreate: " + rtpSession.getSessionId());
-    String resourceUri = rtpSession.getUri().replaceFirst(rtpSession.getAppInstance().getApplication().getName() + "/", "");
-    ResourceRequest resourceRequest = authenticate(rtpSession.getQueryStr(), rtpSession.getIp(), resourceUri, properties);
-    logResourceRequest(resourceRequest);
-    if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
-      rtpSession.rejectSession();
+    try {
+      getLogger().trace("onRTPSessionCreate: " + rtpSession.getSessionId());
+      String resourceUri = rtpSession.getUri().replaceFirst(
+              rtpSession.getAppInstance().getApplication().getName() + "/", "");
+      ResourceRequest resourceRequest = authenticate(rtpSession.getQueryStr(), rtpSession.getIp(), resourceUri,
+              properties);
+      logResourceRequest(resourceRequest);
+      if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+        rtpSession.rejectSession();
+      }
+    } catch (Throwable t) {
+      getLogger().error("Unable to play rtp session." + ExceptionUtils.getStackTrace(t));
     }
   }
 
@@ -189,19 +201,23 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
    *          The parameters for the request.
    */
   public void play(IClient client, com.wowza.wms.request.RequestFunction function, AMFDataList params) {
-    String streamName = params.getString(PARAM1);
-    String queryStr = "";
-    int streamQueryIdx = streamName.indexOf("?");
-    if (streamQueryIdx >= 0) {
-      queryStr = streamName.substring(streamQueryIdx + 1);
-      streamName = streamName.substring(0, streamQueryIdx);
-      getLogger().trace("Query String: " + queryStr);
-      getLogger().trace("Stream Name: " + streamName);
-    }
-    ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
-    handleClient(client, request);
-    if (ResourceRequest.Status.Ok.equals(request.getStatus())) {
-      invokePrevious(client, function, params);
+    try {
+      String streamName = params.getString(PARAM1);
+      String queryStr = "";
+      int streamQueryIdx = streamName.indexOf("?");
+      if (streamQueryIdx >= 0) {
+        queryStr = streamName.substring(streamQueryIdx + 1);
+        streamName = streamName.substring(0, streamQueryIdx);
+        getLogger().trace("Query String: " + queryStr);
+        getLogger().trace("Stream Name: " + streamName);
+      }
+      ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
+      handleClient(client, request);
+      if (ResourceRequest.Status.Ok.equals(request.getStatus())) {
+        invokePrevious(client, function, params);
+      }
+    } catch (Throwable t) {
+     getLogger().error("Unable to play media:" + ExceptionUtils.getStackTrace(t));
     }
   }
 
