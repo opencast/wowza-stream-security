@@ -26,7 +26,7 @@ import java.util.Properties;
  * The Wowza plugin to determine if a resource request for a signed url is valid.
  */
 public class StreamSecurityWowzaPlugin extends ModuleBase {
-  private static final String CONF_KEYS_PROPERTIES_LOCATION = "conf/keys.properties";
+  private static final String CONF_KEYS_PROPERTIES_LOCATION = "conf/streamsecurity.properties";
 
   /** The keys to use to encrypt the signatures. */
   private static Properties properties = new Properties();
@@ -40,7 +40,9 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
                 .getLocation().toURI().getPath();
         String wowzaDirectory = new File(new File(currentJarLocation).getParent()).getParent();
         File keyProperties = new File(wowzaDirectory, CONF_KEYS_PROPERTIES_LOCATION);
-        getLogger().debug("Loading encryption key properties from: " + keyProperties.getAbsolutePath());
+        if (getLogger().isDebugEnabled()) {
+          getLogger().debug("Loading encryption key properties from: " + keyProperties.getAbsolutePath());
+        }
         if (!keyProperties.exists()) {
           getLogger().warn(
                   "The encryption key properties file at " + keyProperties.getAbsolutePath()
@@ -123,15 +125,21 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   public void onConnect(IClient client, RequestFunction function, AMFDataList params) {
-    getLogger().trace("onConnect: " + client.getClientId());
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onConnect: " + client.getClientId());
+    }
   }
 
   public void onConnectAccept(IClient client) {
-    getLogger().trace("onConnectAccept: " + client.getClientId());
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onConnectAccept: " + client.getClientId());
+    }
   }
 
   public void onStreamCreate(IMediaStream stream) {
-    getLogger().trace("onStreamCreate: " + stream.getSrc());
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onStreamCreate: " + stream.getSrc());
+    }
   }
 
   /**
@@ -142,7 +150,9 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
    */
   public void onHTTPSessionCreate(IHTTPStreamerSession httpSession) {
     try {
-      getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
+      if (getLogger().isTraceEnabled()) {
+        getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
+      }
       String resourceUri = httpSession.getUri().replaceFirst(
               httpSession.getAppInstance().getApplication().getName() + "/", "");
       ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(),
@@ -157,11 +167,15 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   public void onHTTPCupertinoStreamingSessionCreate(HTTPStreamerSessionCupertino httpSession) {
-    getLogger().trace("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
+    }
   }
 
   public void onHTTPSmoothStreamingSessionCreate(HTTPStreamerSessionSmoothStreamer httpSession) {
-    getLogger().trace("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
+    }
   }
 
   /**
@@ -172,7 +186,9 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
    */
   public void onRTPSessionCreate(RTPSession rtpSession) {
     try {
-      getLogger().trace("onRTPSessionCreate: " + rtpSession.getSessionId());
+      if (getLogger().isTraceEnabled()) {
+        getLogger().trace("onRTPSessionCreate: " + rtpSession.getSessionId());
+      }
       String resourceUri = rtpSession.getUri().replaceFirst(
               rtpSession.getAppInstance().getApplication().getName() + "/", "");
       ResourceRequest resourceRequest = authenticate(rtpSession.getQueryStr(), rtpSession.getIp(), resourceUri,
@@ -187,7 +203,9 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   public void onCall(String handlerName, IClient client, RequestFunction function, AMFDataList params) {
-    getLogger().trace("onCall: " + handlerName);
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onCall: " + handlerName);
+    }
   }
 
   /**
@@ -208,8 +226,6 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
       if (streamQueryIdx >= 0) {
         queryStr = streamName.substring(streamQueryIdx + 1);
         streamName = streamName.substring(0, streamQueryIdx);
-        getLogger().trace("Query String: " + queryStr);
-        getLogger().trace("Stream Name: " + streamName);
       }
       ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
       handleClient(client, request);
@@ -237,18 +253,22 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
   protected static ResourceRequest authenticate(String queryString, String clientIp, String resourceUri,
           Properties properties) {
     try {
-      getLogger().debug("Query String: " + queryString);
-      getLogger().debug("Client Ip: " + clientIp);
-      getLogger().debug("Resource: " + resourceUri);
+      if (getLogger().isDebugEnabled()) {
+        getLogger().debug("Query String: " + queryString);
+        getLogger().debug("Client Ip: " + clientIp);
+        getLogger().debug("Resource: " + resourceUri);
+      }
       ResourceRequest request = ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri,
               properties);
-      getLogger().debug("Encoded Policy: " + request.getEncodedPolicy());
-      getLogger().debug("Encrypt Id: " + request.getEncryptionKeyId());
-      getLogger().debug("Signature: " + request.getSignature());
-      getLogger().debug("Status: " + request.getStatus());
-      if (request != null && request.getPolicy() != null) {
-        getLogger().debug("BaseURL: " + request.getPolicy().getBaseUrl());
-        getLogger().debug("Valid Until: " + request.getPolicy().getValidUntil());
+      if (getLogger().isDebugEnabled()) {
+        getLogger().debug("Encoded Policy: " + request.getEncodedPolicy());
+        getLogger().debug("Encrypt Id: " + request.getEncryptionKeyId());
+        getLogger().debug("Signature: " + request.getSignature());
+        getLogger().debug("Status: " + request.getStatus());
+        if (request != null && request.getPolicy() != null) {
+          getLogger().debug("BaseURL: " + request.getPolicy().getBaseUrl());
+          getLogger().debug("Valid Until: " + request.getPolicy().getValidUntil());
+        }
       }
       return request;
     } catch (Throwable t) {
