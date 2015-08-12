@@ -10,6 +10,7 @@ In order to run the Stream Security component, some external dependencies exist 
 * [Google Guava](https://github.com/google/guava/wiki/Release17) - Tested with version 17.0
 
 The installation steps are:
+
     cd /tmp/
     wget http://apache.parentingamerica.com//commons/codec/binaries/commons-codec-1.10-bin.tar.gz
     tar -xvf commons-codec-1.10-bin.tar.gz
@@ -20,8 +21,9 @@ The installation steps are:
     wget -O guava-17.0.jar http://search.maven.org/remotecontent?filepath=com/google/guava/guava/17.0/guava-17.0.jar
     mv guava-17.0.jar /usr/local/WowzaStreamingEngine/lib/
 
-Opencast Version 1.6.x Only
+#### Opencast Version 1.6.x Only
 Download the Binary Entwine Functional jar file into your Wowza lib directory.
+
     cd /tmp/
     wget http://maven.entwinemedia.com/content/repositories/releases/com/entwinemedia/common/functional/1.1.1/functional-1.1.1.jar
     mv functional-1.1.1.jar /usr/local/WowzaStreamingEngine/lib/
@@ -30,6 +32,7 @@ Download the Binary Entwine Functional jar file into your Wowza lib directory.
 In addition to the third party libraries, the Wowza Stream Security component also requires some bundles from the Opencast project therefore, the following dependency needs to be copied to Wowza’s lib directory:
 * matterhorn-urlsigning-common-2.1-SNAPSHOT.jar
 The steps for building matterhorn-urlsigning-common-2.1-SNAPSHOT.jar on the Wowza server itself are:
+
     yum install git java-1.8.0-openjdk java-1.8.0-openjdk-devel
     cd /opt
     wget http://apache.sunsite.ualberta.ca/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
@@ -45,6 +48,7 @@ The steps for building matterhorn-urlsigning-common-2.1-SNAPSHOT.jar on the Wowz
 The Wowza Stream Security component is based on Java. Compiling it is therefore very similar to compiling Opencast. Note that in order to build the Wowza component, either local or online access to Opencast’s matterhorn-urlsigning-common Maven artifact is required. Last but not least, make sure the project POM references the correct version of Opencast that you are running (2.1 or 1.6 at the time of writing).
 
 Once the source code is checked out, it can be built with mvn clean install. The resulting lib called matterhorn-urlsigning-common-2.1-SNAPSHOT.jar needs to be copied to Wowza’s lib directory.
+
     yum install git java-1.8.0-openjdk java-1.8.0-openjdk-devel
     cd /opt
     wget http://apache.sunsite.ualberta.ca/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
@@ -54,9 +58,11 @@ Once the source code is checked out, it can be built with mvn clean install. The
     cd wowza-stream-security-plugin/modules/matterhorn-urlsigning-security-wowza-plugin
 
 Replace the version of the plugin if you are using Opencast 1.6
+
     sed -i 's@<version>2.1-SNAPSHOT</version>@<version>1.6.x-SNAPSHOT</version>@g' pom.xml
 
 Build and Install the Wowza Stream Security Component
+
     mvn clean install
     cp target/matterhorn-urlsigning-security-wowza-plugin-1.0.0-SNAPSHOT.jar /usr/local/WowzaStreamingEngine/lib/
 
