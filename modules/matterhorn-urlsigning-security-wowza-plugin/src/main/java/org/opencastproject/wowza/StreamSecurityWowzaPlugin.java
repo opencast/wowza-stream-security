@@ -279,7 +279,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         getLogger().debug("Resource: " + resourceUri);
       }
       ResourceRequest request = ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri,
-              properties);
+              properties, true);
       if (getLogger().isDebugEnabled()) {
         getLogger().debug("Encoded Policy: " + request.getEncodedPolicy());
         getLogger().debug("Encrypt Id: " + request.getEncryptionKeyId());
