@@ -40,8 +40,18 @@ The steps for building matterhorn-urlsigning-common-2.1-SNAPSHOT.jar on the Wowz
     export PATH=/opt/apache-maven-3.3.3/bin:$PATH
     git clone https://bitbucket.org/opencast-community/matterhorn.git
     cd matterhorn
-    [[ Checkout the branch of matterhorn you are interested in, e.g. ‘git checkout f/MH-10729-stream-security’, ‘git checkout f/MH-10729-stream-security-1.6.x’ etc. ]]
-    mvn clean install -Pworker-standalone,serviceregistry,workspace (It can be any profile that contains matterhorn-urlsigning-common)
+
+Checkout the branch of matterhorn you are interested in, e.g.
+
+    git checkout f/MH-10729-stream-security
+
+or
+
+    git checkout f/MH-10729-stream-security-1.6.x
+
+Build any profile that contains matterhorn-urlsigning-common
+
+    mvn clean install -Pworker-standalone,serviceregistry,workspace
     cp modules/matterhorn-urlsigning-common/target/matterhorn-urlsigning-common-*-SNAPSHOT.jar /usr/local/WowzaStreamingEngine/lib/
 
 ## Install Wowza Stream Security Component
