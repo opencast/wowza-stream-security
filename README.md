@@ -64,7 +64,7 @@ Once the source code is checked out, it can be built with mvn clean install. The
     wget http://apache.sunsite.ualberta.ca/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
     tar -xvf apache-maven-3.3.3-bin.tar.gz
     export PATH=/opt/apache-maven-3.3.3/bin:$PATH
-    git clone https://bitbucket.org/entwinemedia/wowza-stream-security-plugin.git
+    git clone https://bitbucket.org/opencast-community/wowza-stream-security-plugin.git
     cd wowza-stream-security-plugin/modules/matterhorn-urlsigning-security-wowza-plugin
 
 Replace the version of the plugin if you are using Opencast 1.6
