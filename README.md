@@ -10,7 +10,7 @@ Please follow the installation instructions from Wowza.
 Usually Wowza should now be installed to /usr/local/WowzaStreamingEngine.
 
 ## Install Wowza Stream Security Component
-The Wowza Stream Security component is based on Java. Compiling it is therefore very similar to compiling Opencast. Note that in order to build the Wowza component, dependencies will be linked from an online Nexus repo or your local M2_REPO if it containes the dependencies already. If you are not running an Opencast release version that is provided by the nexus, you have to build Opencast first on your local machine.
+The Wowza Stream Security component is based on Java. Compiling it is therefore very similar to compiling Opencast. Note that in order to build the Wowza component, dependencies will be linked from an online Nexus repo or your local M2_REPO if it contains the dependencies already. If you are not running an Opencast release version that is provided by the nexus, you have to build Opencast first on your local machine.
 
 Check out the Wowza Stream Security code first. 
 
@@ -45,12 +45,12 @@ Then enter a name for you application, i.e. "opencast".
 
 ![new application dialog](/img/add_application2.png)
 
-Within the setup details of the application it is recommended to deactivate all unsupported "Playback Types" and onyl activate MPEG-DASH, Apple HLS and Adobe RTMP.
+Within the setup details of the application it is recommended to deactivate all unsupported "Playback Types" and only activate MPEG-DASH, Apple HLS and Adobe RTMP.
 You also need to set the content directory to the `org.opencastproject.streaming.directory` defined in the Opencast configuration.
 
 ![application setup](/img/application_details.png)
 
-Now you need to add an addtion module to your application. Open the "Modules" tab, choose "Edit" and "+ Add Module ..." 
+Now you need to add an addition module to your application. Open the "Modules" tab, choose "Edit" and "+ Add Module ..." 
 
 ![module section](/img/application_modules.png)
 
