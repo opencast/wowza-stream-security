@@ -14,7 +14,7 @@
     <opencast.nexus-backup.url>https://nexus.opencast.org</opencast.nexus-backup.url>
     <wowza.path>/usr/local/WowzaStreamingEngine</wowza.path>
     <opencast.version>8-SNAPSHOT</opencast.version>
-    <package.dir>${project.basedir}/../../build/</package.dir>
+    <package.dir>${project.basedir}/build/</package.dir>
   </properties>
 
   <dependencies>
