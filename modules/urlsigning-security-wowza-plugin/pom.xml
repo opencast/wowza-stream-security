@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>urlsigning-security-wowza-plugin</groupId>
   <artifactId>urlsigning-security-wowza-plugin</artifactId>
-  <version>${opencast.version}</version>
+  <version>1.1</version>
   <packaging>jar</packaging>
   <name>urlsigning-security-wowza-plugin</name>
 
@@ -13,16 +13,22 @@
     <opencast.nexus.url>https://mvncache.opencast.org</opencast.nexus.url>
     <opencast.nexus-backup.url>https://nexus.opencast.org</opencast.nexus-backup.url>
     <wowza.path>/usr/local/WowzaStreamingEngine</wowza.path>
-    <opencast.version>4.1</opencast.version>
-    <package.dir>${wowza.path}/lib/</package.dir>
+    <opencast.version>8-SNAPSHOT</opencast.version>
+    <package.dir>${project.basedir}/../../build/</package.dir>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
     <dependency>
       <groupId>org.opencastproject</groupId>
       <artifactId>opencast-urlsigning-common</artifactId>
       <version>${opencast.version}</version>
     </dependency>
+
     <!-- Wowza Dependecies -->
     <dependency>
       <groupId>com.wms</groupId>
@@ -80,69 +86,6 @@
       <scope>system</scope>
       <systemPath>${wowza.path}/lib/wms-stream-publish.jar</systemPath>
     </dependency>
-
-    <!-- Third Party Depencies -->
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-      <version>1.63</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.10.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>28.1-jre</version>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.13</version>
-    </dependency>
-
-    <!-- Logging -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.28</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.28</version>
-    </dependency>
-
-    <!-- Testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -150,7 +93,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5</version>
+        <version>3.5.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -189,10 +132,12 @@
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>false</overWriteSnapshots>
               <overWriteIfNewer>false</overWriteIfNewer>
+              <excludeGroupIds>com.wms</excludeGroupIds>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
 
