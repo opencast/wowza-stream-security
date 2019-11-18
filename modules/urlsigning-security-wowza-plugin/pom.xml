@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>urlsigning-security-wowza-plugin</groupId>
   <artifactId>urlsigning-security-wowza-plugin</artifactId>
   <version>${opencast.version}</version>
   <packaging>jar</packaging>
   <name>urlsigning-security-wowza-plugin</name>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -16,136 +16,135 @@
     <opencast.version>4.1</opencast.version>
     <package.dir>${wowza.path}/lib/</package.dir>
   </properties>
-  
+
   <dependencies>
-      <dependency>
-          <groupId>org.opencastproject</groupId>
-          <artifactId>matterhorn-urlsigning-common</artifactId>
-	  <version>${opencast.version}</version>
-      </dependency>
-      <!-- Wowza Dependecies -->
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-bootstrap</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-bootstrap.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-core</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-core.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-httpstreamer-cupertinostreaming</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-httpstreamer-cupertinostreaming.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-httpstreamer-smoothstreaming</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-httpstreamer-smoothstreaming.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-httpstreamer-sanjosestreaming</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-httpstreamer-sanjosestreaming.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-restlet</artifactId>
-	  <version>2.2.2</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-restlet-2.2.2.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-server</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-server.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.wms</groupId>
-	  <artifactId>wms-stream-publish</artifactId>
-	  <version>4.0</version>
-	  <scope>system</scope>
-	  <systemPath>${wowza.path}/lib/wms-stream-publish.jar</systemPath>
-      </dependency>
-      
-      <!-- Third Party Depencies -->
-      <dependency>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk15on</artifactId>
-          <version>1.49</version>
-      </dependency>
-      <dependency>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-          <version>2.6</version>
-      </dependency>
-      <dependency>
-          <groupId>com.googlecode.json-simple</groupId>
-          <artifactId>json-simple</artifactId>
-          <version>1.1</version>
-      </dependency>
-      <dependency>
-          <groupId>joda-time</groupId>
-          <artifactId>joda-time</artifactId>
-          <version>2.3</version>
-      </dependency>
+    <dependency>
+      <groupId>org.opencastproject</groupId>
+      <artifactId>matterhorn-urlsigning-common</artifactId>
+      <version>${opencast.version}</version>
+    </dependency>
+    <!-- Wowza Dependecies -->
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-bootstrap</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-bootstrap.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-core</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-core.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-httpstreamer-cupertinostreaming</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-httpstreamer-cupertinostreaming.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-httpstreamer-smoothstreaming</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-httpstreamer-smoothstreaming.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-httpstreamer-sanjosestreaming</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-httpstreamer-sanjosestreaming.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-restlet</artifactId>
+      <version>2.2.2</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-restlet-2.2.2.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-server</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-server.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.wms</groupId>
+      <artifactId>wms-stream-publish</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${wowza.path}/lib/wms-stream-publish.jar</systemPath>
+    </dependency>
 
-      <dependency>
-  	<groupId>com.google.guava</groupId>
-	<artifactId>guava</artifactId>
-  	<version>24.0-jre</version>
-      </dependency>
-      <dependency>
-  	<groupId>com.googlecode.json-simple</groupId>
-  	<artifactId>json-simple</artifactId>
-  	<version>1.1.1</version>
-      </dependency>
-      <dependency>
-  	<groupId>commons-codec</groupId>
-  	<artifactId>commons-codec</artifactId>
-  	<version>1.11</version>
-      </dependency>
+    <!-- Third Party Depencies -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.49</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.3</version>
+    </dependency>
 
-      <!-- Logging -->
-      <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>1.2.17</version>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-          <version>1.6.4</version>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <version>1.6.4</version>
-      </dependency>
-      
-       <!-- Testing -->
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>4.12</version>
-          <scope>test</scope>
-      </dependency>
-      
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>24.0-jre</version>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.11</version>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.6.4</version>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -155,23 +154,23 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-antrun-plugin</artifactId>
-	<version>1.8</version>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
         <executions>
-            <execution>
-                <id>copy-to-wowza</id>
-                <phase>install</phase>
-                <configuration>
-			<target>
-			  <delete dir="${package.dir}/${project.build.finalName}" />
-                    	  <copy file="${project.build.directory}/${project.build.finalName}.jar"
-				  todir="${package.dir}" failonerror="false" />
-                    </target>
-	    	</configuration>
-	        <goals>
-                    <goal>run</goal>
-                </goals>
-            </execution>
+          <execution>
+            <id>copy-to-wowza</id>
+            <phase>install</phase>
+            <configuration>
+              <target>
+                <delete dir="${package.dir}/${project.build.finalName}"/>
+                <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                      todir="${package.dir}" failonerror="false"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -186,7 +185,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-	      <outputDirectory>${package.dir}</outputDirectory>
+              <outputDirectory>${package.dir}</outputDirectory>
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>false</overWriteSnapshots>
               <overWriteIfNewer>false</overWriteIfNewer>
@@ -194,10 +193,8 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
-
 
   <repositories>
     <repository>
@@ -216,12 +213,12 @@
       <name>Opencast Backup Repo</name>
       <url>${opencast.nexus-backup.url}/nexus/content/groups/public</url>
       <snapshots>
-	      <enabled>false</enabled>
+        <enabled>false</enabled>
       </snapshots>
       <releases>
         <enabled>true</enabled>
       </releases>
     </repository>
   </repositories>
-  
+
 </project>
