@@ -173,8 +173,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
       if (getLogger().isTraceEnabled()) {
         getLogger().trace("onHTTPSessionCreate: " + httpSession.getSessionId());
       }
-      String resourceUri = httpSession.getUri().replaceFirst(
-              httpSession.getAppInstance().getApplication().getName() + "/", "");
+      String resourceUri = httpSession.getUri();
       ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(),
               resourceUri, properties);
       logResourceRequest(resourceRequest);
@@ -187,16 +186,60 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   public void onHTTPCupertinoStreamingSessionCreate(HTTPStreamerSessionCupertino httpSession) {
-    if (getLogger().isTraceEnabled()) {
-      getLogger().trace("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
+    try {
+      if (getLogger().isTraceEnabled()) {
+        getLogger().trace("onHTTPCupertinoStreamingSessionCreate: " + httpSession.getSessionId());
+      }
+      String resourceUri = httpSession.getUri();
+      ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(),
+              resourceUri, properties);
+      logResourceRequest(resourceRequest);
+      if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+        httpSession.rejectSession();
+      }
+    } catch (Throwable t) {
+      getLogger().error("Unable to play cupertino http session." + ExceptionUtils.getStackTrace(t));
     }
   }
 
   public void onHTTPSmoothStreamingSessionCreate(HTTPStreamerSessionSmoothStreamer httpSession) {
-    if (getLogger().isTraceEnabled()) {
-      getLogger().trace("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
+
+    try {
+      if (getLogger().isTraceEnabled()) {
+        getLogger().trace("onHTTPSmoothStreamingSessionCreate: " + httpSession.getSessionId());
+      }
+      String resourceUri = httpSession.getUri();
+      ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(),
+              resourceUri, properties);
+      logResourceRequest(resourceRequest);
+      if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+        httpSession.rejectSession();
+      }
+    } catch (Throwable t) {
+      getLogger().error("Unable to play smooth http session." + ExceptionUtils.getStackTrace(t));
     }
   }
+
+  public void onHTTPSanJoseStreamingSessionCreate(HTTPStreamerSessionCupertino httpSession) {
+    if (getLogger().isTraceEnabled()) {
+      getLogger().trace("onHTTPSanJoseStreamingSessionCreate: " + httpSession.getSessionId());
+    }
+    try {
+      if (getLogger().isTraceEnabled()) {
+        getLogger().trace("onHTTPSanJoseStreamingSessionCreate: " + httpSession.getSessionId());
+      }
+      String resourceUri = httpSession.getUri();
+      ResourceRequest resourceRequest = authenticate(httpSession.getQueryStr(), httpSession.getIpAddress(),
+              resourceUri, properties);
+      logResourceRequest(resourceRequest);
+      if (resourceRequest.getStatus() != ResourceRequest.Status.Ok) {
+        httpSession.rejectSession();
+      }
+    } catch (Throwable t) {
+      getLogger().error("Unable to play san jose http session." + ExceptionUtils.getStackTrace(t));
+    }
+  }
+
 
   /**
    * Callback function when Wowza has a new request for an RTP session.
@@ -247,7 +290,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         queryStr = streamName.substring(streamQueryIdx + 1);
         streamName = streamName.substring(0, streamQueryIdx);
       }
-      ResourceRequest request = authenticate(queryStr, client.getIp(), streamName, properties);
+      ResourceRequest request = authenticate(queryStr, client.getIp(), client.getUri(), properties);
       handleClient(client, request);
       if (ResourceRequest.Status.Ok.equals(request.getStatus())) {
         invokePrevious(client, function, params);
@@ -279,7 +322,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         getLogger().debug("Resource: " + resourceUri);
       }
       ResourceRequest request = ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri,
-              properties, true);
+              properties, false);
       if (getLogger().isDebugEnabled()) {
         getLogger().debug("Encoded Policy: " + request.getEncodedPolicy());
         getLogger().debug("Encrypt Id: " + request.getEncryptionKeyId());
