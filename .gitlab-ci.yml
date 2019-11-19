@@ -1,0 +1,21 @@
+image: docker.io/wsmirnow/wowza-stream-security-plugin-build:2019-11-19
+
+stages:
+  - build
+
+build-opencast-and-wowza-plugin:
+  stage: build
+  tags:
+    - docker
+  script:
+    - >
+      mvn
+      --batch-mode
+      -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      -Dopencast.version=7.2
+      -Dpackage.dir=$(pwd)/build
+      clean
+      install
+  artifacts:
+    paths:
+    - build/*.jar

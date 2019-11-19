@@ -13,7 +13,7 @@
     <opencast.nexus.url>https://mvncache.opencast.org</opencast.nexus.url>
     <opencast.nexus-backup.url>https://nexus.opencast.org</opencast.nexus-backup.url>
     <wowza.path>/usr/local/WowzaStreamingEngine</wowza.path>
-    <opencast.version>8-SNAPSHOT</opencast.version>
+    <opencast.version>7.2</opencast.version>
     <package.dir>${project.basedir}/build/</package.dir>
   </properties>
 
@@ -140,30 +140,5 @@
 
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>opencast</id>
-      <name>Opencast Repo</name>
-      <url>${opencast.nexus.url}/nexus/content/groups/public</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>opencast-backup</id>
-      <name>Opencast Backup Repo</name>
-      <url>${opencast.nexus-backup.url}/nexus/content/groups/public</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-  </repositories>
 
 </project>
