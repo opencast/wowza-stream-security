@@ -34,8 +34,6 @@ import com.wowza.wms.request.RequestFunction;
 import com.wowza.wms.rtp.model.RTPSession;
 import com.wowza.wms.stream.IMediaStream;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -79,16 +77,16 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         fis = new FileInputStream(keyProperties);
         properties.load(fis);
       } catch (IOException e) {
-        getLogger().error("Unable to load the encryption keys because: " + ExceptionUtils.getStackTrace(e));
+        getLogger().error("Unable to load the encryption keys because: ", e);
       } catch (URISyntaxException e) {
-        getLogger().error("Unable to load the encryption keys because: " + ExceptionUtils.getStackTrace(e));
+        getLogger().error("Unable to load the encryption keys because: ", e);
       } finally {
         try {
           if (fis != null) {
             fis.close();
           }
         } catch (IOException e) {
-          getLogger().warn("Unable to close the encryption keys because: " + ExceptionUtils.getStackTrace(e));
+          getLogger().warn("Unable to close the encryption keys because: ", e);
         }
       }
     }
@@ -181,7 +179,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         httpSession.rejectSession();
       }
     } catch (Throwable t) {
-      getLogger().error("Unable to play http session." + ExceptionUtils.getStackTrace(t));
+      getLogger().error("Unable to play http session.", t);
     }
   }
 
@@ -198,7 +196,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         httpSession.rejectSession();
       }
     } catch (Throwable t) {
-      getLogger().error("Unable to play cupertino http session." + ExceptionUtils.getStackTrace(t));
+      getLogger().error("Unable to play cupertino http session.", t);
     }
   }
 
@@ -216,7 +214,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         httpSession.rejectSession();
       }
     } catch (Throwable t) {
-      getLogger().error("Unable to play smooth http session." + ExceptionUtils.getStackTrace(t));
+      getLogger().error("Unable to play smooth http session.", t);
     }
   }
 
@@ -236,7 +234,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         httpSession.rejectSession();
       }
     } catch (Throwable t) {
-      getLogger().error("Unable to play san jose http session." + ExceptionUtils.getStackTrace(t));
+      getLogger().error("Unable to play san jose http session.", t);
     }
   }
 
@@ -261,7 +259,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         rtpSession.rejectSession();
       }
     } catch (Throwable t) {
-      getLogger().error("Unable to play rtp session." + ExceptionUtils.getStackTrace(t));
+      getLogger().error("Unable to play rtp session.", t);
     }
   }
 
@@ -296,7 +294,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
         invokePrevious(client, function, params);
       }
     } catch (Throwable t) {
-     getLogger().error("Unable to play media:" + ExceptionUtils.getStackTrace(t));
+     getLogger().error("Unable to play media:", t);
     }
   }
 
@@ -335,7 +333,7 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
       }
       return request;
     } catch (Throwable t) {
-      getLogger().error("Unable to process request because: " + ExceptionUtils.getStackTrace(t));
+      getLogger().error("Unable to process request because: ", t);
       ResourceRequest request = new ResourceRequest();
       request.setStatus(Status.Forbidden);
       request.setRejectionReason("Unable to process request due to server error. Unable to verify signed url.");

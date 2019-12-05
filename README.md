@@ -7,7 +7,7 @@ You need to install [Wowza Streaming Engine](https://www.wowza.com/pricing/insta
 
 Please follow the installation instructions from Wowza.
 
-Usually Wowza should now be installed to /usr/local/WowzaStreamingEngine.
+Usually Wowza should now be installed to `/usr/local/WowzaStreamingEngine`.
 
 ## Install Wowza Stream Security Component
 The Wowza Stream Security component is based on Java. Compiling it is therefore very similar to compiling Opencast. Note that in order to build the Wowza component, dependencies will be linked from an online Nexus repo or your local M2_REPO if it contains the dependencies already. If you are not running an Opencast release version that is provided by the nexus, you have to build Opencast first on your local machine.
@@ -15,7 +15,7 @@ The Wowza Stream Security component is based on Java. Compiling it is therefore 
 Check out the Wowza Stream Security code first. 
 
     git clone https://bitbucket.org/opencast-community/wowza-stream-security-plugin.git
-    cd wowza-stream-security-plugin/modules/matterhorn-urlsigning-security-wowza-plugin
+    cd wowza-stream-security-plugin
 
 You need to have a Java build environment with JDK and Maven on your machine. If have this already you can skip these steps!
 
@@ -27,12 +27,16 @@ You need to have a Java build environment with JDK and Maven on your machine. If
 
 Build and Install the Wowza Stream Security Component
 
-    cd modules/urlsigning-security-wowza-plugin
     mvn clean install -Dopencast.version=<your opencast version> [-Dpackage.dir=<output directory>] [-Dwowza.path=<path to your Wowza installation>]
 
 * `-Dopencast.version` specifies the Opencast version that you are using. Make sure this version matches to the Opencast version that you are using (i.e. `-Dopencast.version=4.2`)
-* `-Dpackage.dir` is only needed if you want to build the Wowza Stream Security module to install it on a different server. The new build module and all dependencies will be copied to the specified directory. You can copy these modules to your Wowza server into /usr/local/WowzaStreamingEngine/lib. Please make sure NOT to overwrite any existing files, as the Wowza libraries are also part of the dependencies! If you do not provide a package dir, this module is installed to the Wowza server on the local machine.
+* `-Dpackage.dir` specifies the output directory for the build plugin. This parameter is optionally, with predefined value of `${project.basedir}/build/`
 * `-Dwowza.path` specifies the path to your local Wowza installation. If you installed Wowza to the default path you do not need to set this.
+
+# Install Plugin
+The build module and all the dependencies will be copied to the output directory you specified with `package.dir` parameter or per default to the `build` directory. Next you have to copy the jar files from the output to Wowza lib directory, default path `/usr/local/WowzaStreamingEngine/lib`.
+
+    cp build/*.jar /usr/local/WowzaStreamingEngine/lib/
 
 ## Configuration of Wowza
 You can use the Wowza Engine Manager on http://localhost:8088 to setup the Opencast Application.
@@ -70,7 +74,7 @@ Now you need to save these settings and restart the application.
 
 
 
-The signing keys and secrets have to be configured in a separate file named **streamsecurity.properties** which must be placed inside Wowza’s configuration directory (usually /usr/local/WowzaStreamingEngine/conf). 
+The signing keys and secrets have to be configured in a separate file named **streamsecurity.properties** which must be placed inside Wowza’s configuration directory (usually `/usr/local/WowzaStreamingEngine/conf`). 
 
 The file simply contains a collection of key-value pairs, one per line:
 
