@@ -83,6 +83,18 @@ The file simply contains a collection of key-value pairs, one per line:
 
 As with the HTTPd component, the entries in this file need to have the same values as used for the Signing Providers configuration.
 
+## Configuration for HLS and Dash
+
+URLs can be whitelisted by defining regular expressions in a file called pugin.properties, which will also have to be placed in the Wowza's configuration directory. URLs matching this pattern will not be checked for a correct signature. The patterns will be defined in the file in the following way:
+
+	whitelist.<name>=<pattern>
+
+This can be used to whitelist the segment URLs for HLS and Dash streaming since they are often not signed correctly or not signed at all. Example:
+
+	whitelist.hls=.*media_.*\.ts.*
+	whitelist.hls2=.*chunklist_.*\.m3u8.*
+	whitelist.mpd=.*segment_.*\.m4s.*
+
 ## Configuration of Opencast
 
 To secure the RTMP links the `$OPENCAST_HOME/etc/org.opencastproject.security.urlsigning.provider.impl.WowzaUrlSigningProvider.cfg` has to be adjusted:

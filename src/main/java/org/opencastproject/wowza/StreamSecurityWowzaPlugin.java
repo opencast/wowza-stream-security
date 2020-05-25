@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -45,12 +47,63 @@ import java.util.Properties;
  */
 public class StreamSecurityWowzaPlugin extends ModuleBase {
   private static final String CONF_KEYS_PROPERTIES_LOCATION = "conf/streamsecurity.properties";
+  private static final String CONF_PLUGIN_PROPERTIES_LOCATION = "conf/plugin.properties";
 
   /** The keys to use to encrypt the signatures. */
   private static Properties properties = new Properties();
 
+  /** The plugin settings */
+  private static Properties pluginSettings = new Properties();
+  private static List<String> whitelist = new ArrayList<String>();
+
   public StreamSecurityWowzaPlugin() {
     super();
+
+    // read in the plugin settings
+    if (pluginSettings.size() == 0) {
+      FileInputStream fis = null;
+      try {
+        String currentJarLocation = StreamSecurityWowzaPlugin.class.getProtectionDomain().getCodeSource()
+                .getLocation().toURI().getPath();
+        String wowzaDirectory = new File(new File(currentJarLocation).getParent()).getParent();
+        File pluginProperties = new File(wowzaDirectory, CONF_PLUGIN_PROPERTIES_LOCATION);
+        if (getLogger().isDebugEnabled()) {
+          getLogger().debug("Loading plugin settings from: " + pluginProperties.getAbsolutePath());
+        }
+        if (!pluginProperties.exists()) {
+          getLogger().warn("The plugin settings file at " + pluginProperties.getAbsolutePath() + " is missing.");
+          return;
+        }
+        if (!pluginProperties.canRead()) {
+          getLogger().warn("Unable to read the plugin settings file at " + pluginProperties.getAbsolutePath()
+                          + ". Please check the permissions for the file.");
+          return;
+        }
+        fis = new FileInputStream(pluginProperties);
+        pluginSettings.load(fis);
+
+        // populate whitelist
+        for (String propertyName: pluginSettings.stringPropertyNames()) {
+          if (propertyName.contains("whitelist")) {
+            whitelist.add(pluginSettings.getProperty(propertyName));
+          }
+        }
+
+      } catch (IOException e) {
+        getLogger().error("Unable to load plugin settings because: ", e);
+      } catch (URISyntaxException e) {
+        getLogger().error("Unable to load plugin settings because: ", e);
+      } finally {
+        try {
+          if (fis != null) {
+            fis.close();
+          }
+        } catch (IOException e) {
+          getLogger().warn("Unable to close plugin settings because: ", e);
+        }
+      }
+    }
+
     if (properties.size() == 0) {
       FileInputStream fis = null;
       try {
@@ -299,6 +352,21 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
   }
 
   /**
+   * Check if a resource uri needs to be signed
+   *
+   * @param resourceUri The uri to check
+   * @return true if the uri is whitelisted, ergo does not need to be signed, false otherwise.
+   */
+  private static boolean isWhitelisted(String resourceUri) {
+    for (String whitelistPattern: whitelist) {
+      if (resourceUri.matches(whitelistPattern)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Authenticate a request for a resource.
    *
    * @param queryString
@@ -313,12 +381,23 @@ public class StreamSecurityWowzaPlugin extends ModuleBase {
    */
   protected static ResourceRequest authenticate(String queryString, String clientIp, String resourceUri,
           Properties properties) {
+
     try {
       if (getLogger().isDebugEnabled()) {
         getLogger().debug("Query String: " + queryString);
         getLogger().debug("Client Ip: " + clientIp);
         getLogger().debug("Resource: " + resourceUri);
       }
+
+      if (isWhitelisted(resourceUri)) {
+        if (getLogger().isDebugEnabled()) {
+          getLogger().debug("Resource request does not need to be signed because the uri is whitelisted.");
+        }
+        ResourceRequest request = new ResourceRequest();
+        request.setStatus(Status.Ok);
+        return request;
+      }
+
       ResourceRequest request = ResourceRequestUtil.resourceRequestFromQueryString(queryString, clientIp, resourceUri,
               properties, false);
       if (getLogger().isDebugEnabled()) {
